@@ -1,0 +1,345 @@
+:root {
+  color-scheme: dark;
+  --base: #1b1b1d;
+  --panel: #222225;
+  --rail: #161618;
+  --line: #33333a;
+  --ink: #dcddde;
+  --muted: #8a8a93;
+  --accent: #7c6cff;
+}
+
+* {
+  scrollbar-color: #3a3a42 transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a3a42;
+  border-radius: 8px;
+  border: 2px solid var(--base);
+}
+
+.nav-item {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--muted);
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.nav-item:hover {
+  background: #26262b;
+  color: var(--ink);
+}
+
+.nav-item-active {
+  background: #2c2b38;
+  color: #ffffff;
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field {
+  background: #1a1a1d;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124, 108, 255, 0.18);
+}
+
+.field::placeholder {
+  color: #6a6a73;
+}
+
+textarea.field {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: #26262b;
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.btn:hover {
+  background: #2f2f36;
+  border-color: #45454f;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #8b7cff;
+  border-color: #8b7cff;
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  padding: 5px 9px;
+}
+
+.btn-ghost:hover {
+  background: #2b2b31;
+  color: var(--ink);
+}
+
+.btn-danger:hover {
+  color: #ff8080;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--chip-color, var(--accent));
+  border: 1px solid color-mix(in srgb, var(--chip-color, var(--accent)) 45%, transparent);
+  background: color-mix(in srgb, var(--chip-color, var(--accent)) 14%, transparent);
+  white-space: nowrap;
+}
+
+a.chip:hover {
+  background: color-mix(in srgb, var(--chip-color, var(--accent)) 26%, transparent);
+}
+
+.chip-select {
+  cursor: pointer;
+}
+
+.chip-select .chip {
+  opacity: 0.45;
+  filter: grayscale(0.5);
+}
+
+.chip-select input:checked + .chip {
+  opacity: 1;
+  filter: none;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+  transition: border-color 120ms ease, transform 120ms ease;
+}
+
+.card:hover {
+  border-color: #45454f;
+}
+
+.card-done {
+  opacity: 0.55;
+}
+
+.card-done .card-title {
+  text-decoration: line-through;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f0f0f2;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.note-body {
+  white-space: pre-wrap;
+  line-height: 1.65;
+  font-size: 14px;
+  color: #c4c5c8;
+}
+
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.stat-label {
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.progress {
+  height: 8px;
+  border-radius: 999px;
+  background: #2c2c32;
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #4caf82);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid #4a4a55;
+  background: #1a1a1d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: none;
+  padding: 0;
+  color: transparent;
+  font-size: 12px;
+  line-height: 1;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.checkbox[data-done="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+dialog {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0;
+  width: min(640px, calc(100vw - 48px));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+dialog::backdrop {
+  background: rgba(10, 10, 12, 0.65);
+}
+
+dialog .dialog-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 600;
+}
+
+dialog .dialog-body {
+  padding: 20px;
+}
+
+dialog .dialog-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.empty {
+  padding: 28px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.overdue {
+  color: #ff8a8a;
+}
+
+.help-section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f0f0f2;
+  margin-bottom: 8px;
+}
+
+.help-section p,
+.help-section li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #c4c5c8;
+}
+
+.help-section ul {
+  list-style: disc;
+  padding-left: 22px;
+}
+
+kbd {
+  background: #2c2c32;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

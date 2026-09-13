@@ -1,0 +1,104 @@
+{{define "content"}}
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <div class="stat">
+    <div class="stat-value">{{.Dashboard.TodosTotal}}</div>
+    <div class="stat-label">Всего задач</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">{{.Dashboard.TodosDone}}</div>
+    <div class="stat-label">Выполнено</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">{{.Dashboard.NotesTotal}}</div>
+    <div class="stat-label">Заметок</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">{{.Dashboard.TagsTotal}}</div>
+    <div class="stat-label">Тегов</div>
+  </div>
+</section>
+
+<section class="panel mt-5 px-5 py-4">
+  <div class="flex items-baseline justify-between mb-3">
+    <span class="text-sm text-muted">Прогресс по задачам</span>
+    <span class="text-sm">{{percent .Dashboard.TodosDone .Dashboard.TodosTotal}}% — активных {{.Dashboard.TodosActive}}</span>
+  </div>
+  <div class="progress">
+    <span style="{{widthStyle .Dashboard.TodosDone .Dashboard.TodosTotal}}"></span>
+  </div>
+</section>
+
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-5 mt-5">
+  <section class="panel">
+    <div class="panel-header">
+      Дедлайны в ближайшие 3 дня
+      <a href="/todos?filter=active" class="ml-auto btn btn-ghost">Все задачи</a>
+    </div>
+    {{if .Dashboard.SoonTodos}}
+    <ul class="divide-y divide-line">
+      {{range .Dashboard.SoonTodos}}
+      <li class="px-5 py-3 flex items-start gap-3">
+        <div class="min-w-0 flex-1">
+          <div class="card-title truncate">{{.Title}}</div>
+          <div class="mt-1 flex flex-wrap items-center gap-2">
+            <span class="meta">до {{formatDate .DueDate}}</span>
+            {{template "tagChips" .Tags}}
+          </div>
+        </div>
+      </li>
+      {{end}}
+    </ul>
+    {{else}}
+    <p class="empty">Ближайшие три дня свободны.</p>
+    {{end}}
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      Заметки за последние 7 дней
+      <a href="/notes" class="ml-auto btn btn-ghost">Все заметки</a>
+    </div>
+    {{if .Dashboard.RecentNotes}}
+    <ul class="divide-y divide-line">
+      {{range .Dashboard.RecentNotes}}
+      <li class="px-5 py-3">
+        <div class="card-title">{{.Title}}</div>
+        <p class="meta mt-1">{{formatDateTime .CreatedAt}}</p>
+        <div class="mt-2 flex flex-wrap gap-2">{{template "tagChips" .Tags}}</div>
+      </li>
+      {{end}}
+    </ul>
+    {{else}}
+    <p class="empty">За последнюю неделю заметок не было.</p>
+    {{end}}
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">Популярные теги</div>
+    {{if .Dashboard.PopularTags}}
+    <ul class="divide-y divide-line">
+      {{range .Dashboard.PopularTags}}
+      <li class="px-5 py-3 flex items-center gap-3">
+        <a href="/tags/{{.Tag.ID}}" class="chip" style="{{tagStyle .Tag.Color}}">{{.Tag.Name}}</a>
+        <span class="meta ml-auto">заметок {{.NoteCount}} · задач {{.TodoCount}} · всего {{.Total}}</span>
+      </li>
+      {{end}}
+    </ul>
+    {{else}}
+    <p class="empty">Теги пока ни к чему не привязаны.</p>
+    {{end}}
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      Неиспользуемые теги
+      <a href="/tags" class="ml-auto btn btn-ghost">Управление тегами</a>
+    </div>
+    {{if .Dashboard.UnusedTags}}
+    <div class="px-5 py-4 flex flex-wrap gap-2">{{template "tagChips" .Dashboard.UnusedTags}}</div>
+    {{else}}
+    <p class="empty">Каждый тег используется хотя бы один раз.</p>
+    {{end}}
+  </section>
+</div>
+{{end}}

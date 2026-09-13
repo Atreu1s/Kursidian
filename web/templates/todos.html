@@ -1,0 +1,94 @@
+{{define "content"}}
+<div class="flex flex-wrap items-center gap-3 mb-5">
+  <nav class="flex gap-1 p-1 rounded-lg bg-panel border border-line">
+    <a href="/todos?filter=all" class="nav-item {{if eq .Filter "all"}}nav-item-active{{end}}">Все</a>
+    <a href="/todos?filter=active" class="nav-item {{if eq .Filter "active"}}nav-item-active{{end}}">Активные</a>
+    <a href="/todos?filter=done" class="nav-item {{if eq .Filter "done"}}nav-item-active{{end}}">Выполненные</a>
+  </nav>
+  <span class="meta">Показано задач: {{len .Todos}}</span>
+  <button type="button" class="btn btn-primary ml-auto" data-dialog="todo-create">Новая задача</button>
+</div>
+
+{{if .Todos}}
+<ul class="space-y-3">
+  {{range .Todos}}
+  <li class="card {{if .IsDone}}card-done{{end}}" data-todo-card data-filter="{{$.Filter}}">
+    <div class="flex items-start gap-3">
+      <button type="button" class="checkbox" data-todo-id="{{.ID}}" data-done="{{.IsDone}}"
+              role="checkbox" aria-checked="{{.IsDone}}" aria-label="Переключить выполнение">{{if .IsDone}}✓{{end}}</button>
+
+      <div class="min-w-0 flex-1">
+        <div class="card-title">{{.Title}}</div>
+        {{if .Description}}<p class="note-body mt-1">{{.Description}}</p>{{end}}
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          {{if .DueDate}}
+          <span class="meta {{if .IsOverdue}}overdue{{end}}">Дедлайн: {{formatDate .DueDate}}</span>
+          {{end}}
+          <span class="meta">Создана: {{formatDate .CreatedAt}}</span>
+          {{template "tagChips" .Tags}}
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1">
+        <button type="button" class="btn btn-ghost" data-dialog="todo-edit-{{.ID}}">Изменить</button>
+        <form action="/todos/{{.ID}}/delete" method="post" data-confirm="Удалить задачу «{{.Title}}»?">
+          <input type="hidden" name="redirect_to" value="/todos?filter={{$.Filter}}">
+          <button type="submit" class="btn btn-ghost btn-danger">Удалить</button>
+        </form>
+      </div>
+    </div>
+
+  <dialog id="todo-edit-{{.ID}}">
+    <form action="/todos/{{.ID}}/update" method="post">
+      <div class="dialog-header">Редактирование задачи</div>
+      <div class="dialog-body">
+        <input type="hidden" name="redirect_to" value="/todos?filter={{$.Filter}}">
+        <label class="label" for="todo-title-{{.ID}}">Заголовок</label>
+        <input id="todo-title-{{.ID}}" class="field w-full" type="text" name="title" value="{{.Title}}" required maxlength="200">
+
+        <label class="label mt-4" for="todo-description-{{.ID}}">Описание</label>
+        <textarea id="todo-description-{{.ID}}" class="field w-full" name="description" rows="4">{{.Description}}</textarea>
+
+        <label class="label mt-4" for="todo-due-{{.ID}}">Дедлайн</label>
+        <input id="todo-due-{{.ID}}" class="field" type="date" name="due_date" value="{{.DueDateString}}">
+
+        {{template "tagPicker" dict "All" $.AllTags "Selected" .Tags}}
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn" data-close>Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+  </li>
+  {{end}}
+</ul>
+{{else}}
+<div class="panel"><p class="empty">Задач в этом фильтре нет. Создайте первую задачу кнопкой «Новая задача».</p></div>
+{{end}}
+
+<dialog id="todo-create">
+  <form action="/todos" method="post">
+    <div class="dialog-header">Новая задача</div>
+    <div class="dialog-body">
+      <input type="hidden" name="redirect_to" value="/todos?filter={{.Filter}}">
+      <label class="label" for="todo-new-title">Заголовок</label>
+      <input id="todo-new-title" class="field w-full" type="text" name="title" required maxlength="200"
+             placeholder="Например: подготовить отчёт по практике">
+
+      <label class="label mt-4" for="todo-new-description">Описание</label>
+      <textarea id="todo-new-description" class="field w-full" name="description" rows="4"
+                placeholder="Детали, критерии готовности, ссылки"></textarea>
+
+      <label class="label mt-4" for="todo-new-due">Дедлайн</label>
+      <input id="todo-new-due" class="field" type="date" name="due_date" value="">
+
+      {{template "tagPicker" dict "All" .AllTags "Selected" nil}}
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="btn" data-close>Отмена</button>
+      <button type="submit" class="btn btn-primary">Создать</button>
+    </div>
+  </form>
+</dialog>
+{{end}}

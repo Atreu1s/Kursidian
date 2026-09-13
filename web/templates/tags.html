@@ -1,0 +1,127 @@
+{{define "content"}}
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-5 items-start">
+  <section class="panel xl:col-span-1">
+    <div class="panel-header">
+      Теги
+      <button type="button" class="ml-auto btn btn-ghost" data-dialog="tag-create">Добавить</button>
+    </div>
+
+    {{if .Usages}}
+    <ul class="divide-y divide-line">
+      {{range .Usages}}
+      <li class="px-5 py-3">
+        <div class="flex items-center gap-3">
+          <a href="/tags/{{.Tag.ID}}" class="chip" style="{{tagStyle .Tag.Color}}">{{.Tag.Name}}</a>
+          <span class="meta ml-auto">{{.NoteCount}} / {{.TodoCount}}</span>
+        </div>
+        <div class="mt-2 flex items-center gap-1">
+          <button type="button" class="btn btn-ghost" data-dialog="tag-edit-{{.Tag.ID}}">Изменить</button>
+          <form action="/tags/{{.Tag.ID}}/delete" method="post"
+                data-confirm="Удалить тег «{{.Tag.Name}}»? Он исчезнет у всех заметок и задач.">
+            <input type="hidden" name="redirect_to" value="/tags">
+            <button type="submit" class="btn btn-ghost btn-danger">Удалить</button>
+          </form>
+        </div>
+
+        <dialog id="tag-edit-{{.Tag.ID}}">
+          <form action="/tags/{{.Tag.ID}}/update" method="post">
+            <div class="dialog-header">Редактирование тега</div>
+            <div class="dialog-body">
+              <input type="hidden" name="redirect_to" value="/tags">
+              <label class="label" for="tag-name-{{.Tag.ID}}">Название</label>
+              <input id="tag-name-{{.Tag.ID}}" class="field w-full" type="text" name="name" value="{{.Tag.Name}}" required maxlength="60">
+
+              <label class="label mt-4" for="tag-color-{{.Tag.ID}}">Цвет</label>
+              <input id="tag-color-{{.Tag.ID}}" class="field h-10 w-24" type="color" name="color" value="{{.Tag.Color}}">
+            </div>
+            <div class="dialog-footer">
+              <button type="button" class="btn" data-close>Отмена</button>
+              <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+          </form>
+        </dialog>
+      </li>
+      {{end}}
+    </ul>
+    <p class="px-5 py-3 meta border-t border-line">Числа справа — количество заметок и задач с этим тегом.</p>
+    {{else}}
+    <p class="empty">Тегов пока нет. Добавьте первый тег кнопкой «Добавить».</p>
+    {{end}}
+  </section>
+
+  <section class="xl:col-span-2 space-y-5">
+    {{if .Selected}}
+    <div class="panel">
+      <div class="panel-header">
+        Заметки с тегом
+        <span class="chip" style="{{tagStyle .Selected.Color}}">{{.Selected.Name}}</span>
+        <a href="/tags" class="ml-auto btn btn-ghost">Сбросить</a>
+      </div>
+      {{if .Notes}}
+      <ul class="divide-y divide-line">
+        {{range .Notes}}
+        <li class="px-5 py-3">
+          <div class="card-title">{{.Title}}</div>
+          <p class="note-body mt-1">{{excerpt .}}</p>
+          <div class="mt-2 flex flex-wrap gap-2">{{template "tagChips" .Tags}}</div>
+        </li>
+        {{end}}
+      </ul>
+      {{else}}
+      <p class="empty">С этим тегом нет ни одной заметки.</p>
+      {{end}}
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        Задачи с тегом
+        <span class="chip" style="{{tagStyle .Selected.Color}}">{{.Selected.Name}}</span>
+      </div>
+      {{if .Todos}}
+      <ul class="divide-y divide-line">
+        {{range .Todos}}
+        <li class="px-5 py-3 {{if .IsDone}}card-done{{end}}">
+          <div class="card-title">{{.Title}}</div>
+          <div class="mt-1 flex flex-wrap items-center gap-2">
+            <span class="meta">{{if .IsDone}}выполнена{{else}}активна{{end}}</span>
+            {{if .DueDate}}<span class="meta {{if .IsOverdue}}overdue{{end}}">до {{formatDate .DueDate}}</span>{{end}}
+            {{template "tagChips" .Tags}}
+          </div>
+        </li>
+        {{end}}
+      </ul>
+      {{else}}
+      <p class="empty">С этим тегом нет ни одной задачи.</p>
+      {{end}}
+    </div>
+    {{else}}
+    <div class="panel">
+      <div class="panel-header">Как работают теги</div>
+      <div class="px-5 py-4 help-section space-y-3">
+        <p>Тег — общая точка связи между заметкой и задачей. Одна заметка может иметь несколько тегов, и один тег может стоять у многих заметок и задач: в базе данных это связь «многие ко многим» через таблицы <code>note_tags</code> и <code>todo_tags</code>.</p>
+        <p>Нажмите на любой тег слева, чтобы увидеть все связанные с ним заметки и задачи на одной странице.</p>
+        <p>При удалении тега связи снимаются автоматически благодаря внешним ключам с правилом <code>ON DELETE CASCADE</code>; сами заметки и задачи сохраняются.</p>
+      </div>
+    </div>
+    {{end}}
+  </section>
+</div>
+
+<dialog id="tag-create">
+  <form action="/tags" method="post">
+    <div class="dialog-header">Новый тег</div>
+    <div class="dialog-body">
+      <input type="hidden" name="redirect_to" value="/tags">
+      <label class="label" for="tag-new-name">Название</label>
+      <input id="tag-new-name" class="field w-full" type="text" name="name" required maxlength="60" placeholder="Например: Диплом">
+
+      <label class="label mt-4" for="tag-new-color">Цвет</label>
+      <input id="tag-new-color" class="field h-10 w-24" type="color" name="color" value="#7c6cff">
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="btn" data-close>Отмена</button>
+      <button type="submit" class="btn btn-primary">Создать</button>
+    </div>
+  </form>
+</dialog>
+{{end}}

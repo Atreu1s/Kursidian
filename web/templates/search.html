@@ -1,0 +1,58 @@
+{{define "content"}}
+<form action="/search" method="get" class="flex flex-wrap items-center gap-2 mb-5">
+  <input class="field w-96" type="search" name="q" value="{{.Result.Query}}" autofocus
+         placeholder="Введите слово или фразу">
+  <button type="submit" class="btn btn-primary">Искать</button>
+  {{if .Result.Query}}<a href="/search" class="btn btn-ghost">Очистить</a>{{end}}
+  <span class="meta ml-auto">Поиск идёт по заголовкам, тексту заметок и описаниям задач</span>
+</form>
+
+{{if .Result.Query}}
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
+  <section class="panel">
+    <div class="panel-header">Заметки <span class="ml-auto">{{len .Result.Notes}}</span></div>
+    {{if .Result.Notes}}
+    <ul class="divide-y divide-line">
+      {{range .Result.Notes}}
+      <li class="px-5 py-3">
+        <div class="card-title">{{.Title}}</div>
+        <p class="note-body mt-1">{{excerpt .}}</p>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <span class="meta">{{formatDateTime .UpdatedAt}}</span>
+          {{template "tagChips" .Tags}}
+        </div>
+      </li>
+      {{end}}
+    </ul>
+    {{else}}
+    <p class="empty">Заметок по запросу не найдено.</p>
+    {{end}}
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">Задачи <span class="ml-auto">{{len .Result.Todos}}</span></div>
+    {{if .Result.Todos}}
+    <ul class="divide-y divide-line">
+      {{range .Result.Todos}}
+      <li class="px-5 py-3 {{if .IsDone}}card-done{{end}}">
+        <div class="card-title">{{.Title}}</div>
+        {{if .Description}}<p class="note-body mt-1">{{.Description}}</p>{{end}}
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <span class="meta">{{if .IsDone}}выполнена{{else}}активна{{end}}</span>
+          {{if .DueDate}}<span class="meta {{if .IsOverdue}}overdue{{end}}">до {{formatDate .DueDate}}</span>{{end}}
+          {{template "tagChips" .Tags}}
+        </div>
+      </li>
+      {{end}}
+    </ul>
+    {{else}}
+    <p class="empty">Задач по запросу не найдено.</p>
+    {{end}}
+  </section>
+</div>
+{{else}}
+<div class="panel">
+  <p class="empty">Введите запрос, чтобы искать одновременно по заметкам и задачам. Быстрый доступ к строке поиска — клавиша <kbd>/</kbd>.</p>
+</div>
+{{end}}
+{{end}}
